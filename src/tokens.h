@@ -1,0 +1,34 @@
+#ifndef TOKENS_H
+#define TOKENS_H
+
+/* Liste des tokens */
+typedef enum {
+    TOKEN_ANNEE = 258,
+    TOKEN_NIVEAU,
+    TOKEN_ETUDIANT,
+    TOKEN_MATRICULE,
+    TOKEN_NOM,
+    TOKEN_PRENOM,
+    TOKEN_SEMESTRE,
+    TOKEN_MODULE,
+    TOKEN_COEF,
+    TOKEN_NOTE,
+    TOKEN_L1,
+    TOKEN_L2,
+    TOKEN_L3,
+    TOKEN_S1,
+    TOKEN_S2,
+    TOKEN_S3,
+    TOKEN_S4,
+    TOKEN_S5,
+    TOKEN_S6,
+    TOKEN_ENTIER,
+    TOKEN_REEL,
+    TOKEN_STRING,
+    TOKEN_LBRACE,
+    TOKEN_RBRACE,
+    TOKEN_COLON,
+    TOKEN_ERREUR
+} TokenType;
+
+#endif
