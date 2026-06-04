@@ -1,83 +1,187 @@
+/*
+ * lexer.l - Analyseur Lexical Flex
+ * Projet  : Systeme de Gestion des Notes (SGN)
+ * Module  : Compilation - Master 1 Informatique
+ * Auteur  : [NOM1] [NOM2]
+ * Date    : 2025-2026
+ *
+ * Compilation : flex lexer.l
+ * Test seul   : flex lexer.l && gcc -DTEST_LEXER_ONLY lex.yy.c -o test_lexer
+ */
+
+/* ========================================================
+   SECTION 1 : Declarations C et options Flex
+   ======================================================== */
 %{
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "parser.tab.h"  /* Important pour Bison */
 
-extern int nb_ligne;
+/* En mode integration avec Bison, on inclut parser.tab.h
+   En mode test seul, on definit les tokens manuellement */
+#ifndef TEST_LEXER_ONLY
+  #include "parser.tab.h"
+#else
+  enum {
+    ANNEE=258, NIVEAU, ETUDIANT, MATRICULE, NOM_TOK, PRENOM_TOK,
+    SEMESTRE, MODULE_TOK, COEF, NOTE,
+    L1, L2, L3,
+    S1, S2, S3, S4, S5, S6,
+    REEL, ENTIER, STRING,
+    LBRACE, RBRACE, COLON,
+    ERREUR_LEX
+  };
+  union {
+    double reel;
+    int    entier;
+    char  *chaine;
+  } yylval;
+#endif
 
-/* Pour stocker les valeurs des tokens */
-extern YYSTYPE yylval;
-
+void erreur_lexicale(const char *msg, int ligne);
 %}
 
 %option noyywrap
+%option yylineno
 
-/* ===== DÉFINITIONS ===== */
-ESPACE       [ \t]
-CHIFFRE      [0-9]
-LETTRE       [A-Za-z]
-
-ENTIER       [0-9]+
-REEL         [0-9]+\.[0-9]+
-STRING       \"[^\"]*\"
+CHIFFRE     [0-9]
+BLANC       [ \t\r]+
+REEL_DEF    {CHIFFRE}+("."{CHIFFRE}+)?
+STRING_DEF  \"[^"\n]*\"
 
 %%
 
- /* Mots-clés */
-"ANNEE"         { return TOKEN_ANNEE; }
-"NIVEAU"        { return TOKEN_NIVEAU; }
-"ETUDIANT"      { return TOKEN_ETUDIANT; }
-"MATRICULE"     { return TOKEN_MATRICULE; }
-"NOM"           { return TOKEN_NOM; }
-"PRENOM"        { return TOKEN_PRENOM; }
-"SEMESTRE"      { return TOKEN_SEMESTRE; }
-"MODULE"        { return TOKEN_MODULE; }
-"COEF"          { return TOKEN_COEF; }
-"NOTE"          { return TOKEN_NOTE; }
+"--"[^\n]*      { /* commentaire : ignorer */ }
 
- /* Niveaux */
-"L1"            { return TOKEN_L1; }
-"L2"            { return TOKEN_L2; }
-"L3"            { return TOKEN_L3; }
+"ANNEE"         { return ANNEE;      }
+"NIVEAU"        { return NIVEAU_KW;     }
+"ETUDIANT"      { return ETUDIANT;   }
+"MATRICULE"     { return MATRICULE;  }
+"NOM"           { return NOM_TOK;    }
+"PRENOM"        { return PRENOM_TOK; }
+"SEMESTRE"      { return SEMESTRE;   }
+"MODULE"        { return MODULE_KW; }
+"COEF"          { return COEF;       }
+"NOTE"          { return NOTE;       }
 
- /* Semestres */
-"S1"            { return TOKEN_S1; }
-"S2"            { return TOKEN_S2; }
-"S3"            { return TOKEN_S3; }
-"S4"            { return TOKEN_S4; }
-"S5"            { return TOKEN_S5; }
-"S6"            { return TOKEN_S6; }
+"L1"            { return L1; }
+"L2"            { return L2; }
+"L3"            { return L3; }
 
- /* Littéraux */
- {ENTIER}      { 
-                 yylval.entier = atoi(yytext); 
-                 return TOKEN_ENTIER; 
-               }
- {REEL}        { 
-                 yylval.reel = atof(yytext); 
-                 return TOKEN_REEL; 
-               }
- {STRING}      { 
-                 yylval.chaine = strdup(yytext); 
-                 return TOKEN_STRING; 
-               }
+"S1"            { return S1; }
+"S2"            { return S2; }
+"S3"            { return S3; }
+"S4"            { return S4; }
+"S5"            { return S5; }
+"S6"            { return S6; }
 
- /* Ponctuation */
-"{"           { return TOKEN_LBRACE; }
-"}"           { return TOKEN_RBRACE; }
-":"           { return TOKEN_COLON; }
+{REEL_DEF}      {
+                    if (strchr(yytext, '.') != NULL) {
+                        yylval.reel = atof(yytext);
+                        return REEL;
+                    } else {
+                        yylval.entier = atoi(yytext);
+                        return ENTIER;
+                    }
+                }
 
- /* Commentaires */
-"--".*        { /* on ignore */ }
+{STRING_DEF}    {
+                    int len = yyleng - 2;
+                    yylval.chaine = (char*)malloc(len + 1);
+                    if (!yylval.chaine) {
+                        erreur_lexicale("Memoire insuffisante", yylineno);
+                        exit(1);
+                    }
+                    strncpy(yylval.chaine, yytext + 1, len);
+                    yylval.chaine[len] = '\0';
+                    return STRING;
+                }
 
- /* Espaces */
-{ESPACE}+     { /* on ignore */ }
-"\n"          { nb_ligne++; }
+"{"             { return LBRACE; }
+"}"             { return RBRACE; }
+":"             { return COLON;  }
 
- /* Erreur */
-.             { 
-                fprintf(stderr, "ERREUR LEXICALE ligne %d : caractère inattendu '%c'\n", 
-                       nb_ligne, yytext[0]);
-                return TOKEN_ERREUR;
-              }
+{BLANC}         { /* ignorer espaces et tabulations */ }
+"\n"            { /* saut de ligne gere par yylineno  */ }
+
+.               {
+                    char msg[64];
+                    snprintf(msg, sizeof(msg), "Caractere inattendu : '%s'", yytext);
+                    erreur_lexicale(msg, yylineno);
+                    return ERREUR_LEX;
+                }
+
+%%
+
+/* ========================================================
+   SECTION 3 : Fonctions C
+   ======================================================== */
+
+void erreur_lexicale(const char *msg, int ligne) {
+    fprintf(stderr, "[ERREUR LEXICALE] Ligne %d : %s\n", ligne, msg);
+}
+
+#ifdef TEST_LEXER_ONLY
+
+const char *nom_token(int tok) {
+    switch(tok) {
+        case ANNEE:      return "ANNEE";
+        case NIVEAU:     return "NIVEAU";
+        case ETUDIANT:   return "ETUDIANT";
+        case MATRICULE:  return "MATRICULE";
+        case NOM_TOK:    return "NOM";
+        case PRENOM_TOK: return "PRENOM";
+        case SEMESTRE:   return "SEMESTRE";
+        case MODULE_TOK: return "MODULE";
+        case COEF:       return "COEF";
+        case NOTE:       return "NOTE";
+        case L1:         return "L1";
+        case L2:         return "L2";
+        case L3:         return "L3";
+        case S1:         return "S1";
+        case S2:         return "S2";
+        case S3:         return "S3";
+        case S4:         return "S4";
+        case S5:         return "S5";
+        case S6:         return "S6";
+        case REEL:       return "REEL";
+        case ENTIER:     return "ENTIER";
+        case STRING:     return "STRING";
+        case LBRACE:     return "LBRACE {";
+        case RBRACE:     return "RBRACE }";
+        case COLON:      return "COLON  :";
+        case ERREUR_LEX: return "ERREUR_LEXICALE";
+        default:         return "INCONNU";
+    }
+}
+
+int main(int argc, char *argv[]) {
+    int tok;
+    printf("=== Analyseur Lexical SGN - Mode Test ===\n");
+    printf("%-6s  %-20s  %s\n", "Ligne", "Token", "Valeur");
+    printf("--------------------------------------------------\n");
+
+    while ((tok = yylex()) != 0) {
+        printf("%-6d  %-20s  ", yylineno, nom_token(tok));
+        switch(tok) {
+            case REEL:
+                printf("%.2f", yylval.reel);
+                break;
+            case ENTIER:
+                printf("%d", yylval.entier);
+                break;
+            case STRING:
+                printf("\"%s\"", yylval.chaine);
+                free(yylval.chaine);
+                break;
+            default:
+                printf("%s", yytext);
+                break;
+        }
+        printf("\n");
+    }
+    printf("--------------------------------------------------\n");
+    printf("Analyse lexicale terminee.\n");
+    return 0;
+}
+#endif
