@@ -1,6 +1,7 @@
 /*
  * main.c - Point d'entree du programme SGN
- * Projet  : Systeme de Gestion des Notes
+ * Projet  : Systeme de Gestion des Notes (SGN)
+ * Module  : Compilation - Master 1 Informatique
  * Auteur  : [NOM1] [NOM2]
  * Date    : 2025-2026
  *
@@ -9,42 +10,49 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include "symboles.h"
+#include "ast.h"
 
 /* Declares dans parser.tab.c */
-extern int  yyparse(void);
+extern int   yyparse(void);
 extern FILE *yyin;
-extern int  g_erreurs;
-extern void afficher_json();
+extern int   g_erreurs;
+extern void  afficher_json_global(void);
 
-/* La structure programme globale */
-/* (declaree dans parser.y, accessible via extern) */
+/* Table de symboles et AST declares dans parser.y */
+extern TableSymboles g_table;
+extern ASTNode      *g_ast_racine;
 
 int main(int argc, char *argv[]) {
 
-    /* Lecture depuis un fichier ou stdin */
+    /* Initialiser la table de symboles */
+    symb_initialiser(&g_table);
+
+    /* Creer le noeud racine de l'AST */
+    g_ast_racine = ast_creer_noeud(NODE_PROGRAMME, NULL, 0);
+
+    /* Ouvrir le fichier source ou lire depuis stdin */
     if (argc >= 2) {
         yyin = fopen(argv[1], "r");
         if (!yyin) {
             fprintf(stderr,
-                "[ERREUR] Impossible d'ouvrir le fichier : %s\n",
-                argv[1]);
+                "[ERREUR] Impossible d'ouvrir : %s\n", argv[1]);
             return 1;
         }
     } else {
         yyin = stdin;
     }
 
-    /* Lancer l'analyse syntaxique (qui appelle le lexer) */
+    /* Lancer l'analyse (lexicale + syntaxique + semantique) */
     int res = yyparse();
 
     if (argc >= 2) fclose(yyin);
 
-    /* Afficher le JSON sur stdout (lu par Python) */
-    /* meme en cas d'erreur partielle, on affiche ce qu'on a */
-    extern void afficher_json_global(void);
+    /* Sortie JSON sur stdout pour l'interface Python */
     afficher_json_global();
 
-    /* Code de retour : 0 si OK, 1 si erreurs */
+    /* Liberer la memoire de l'AST */
+    ast_liberer(g_ast_racine);
+
     return (res != 0 || g_erreurs > 0) ? 1 : 0;
 }

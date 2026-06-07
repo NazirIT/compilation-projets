@@ -23,8 +23,8 @@
   #include "parser.tab.h"
 #else
   enum {
-    ANNEE=258, NIVEAU, ETUDIANT, MATRICULE, NOM_TOK, PRENOM_TOK,
-    SEMESTRE, MODULE_TOK, COEF, NOTE,
+    ANNEE=258, NIVEAU_KW, ETUDIANT, MATRICULE, NOM_TOK, PRENOM_TOK,
+    SEMESTRE, MODULE_KW, COEF, NOTE,
     L1, L2, L3,
     S1, S2, S3, S4, S5, S6,
     REEL, ENTIER, STRING,
@@ -126,13 +126,13 @@ void erreur_lexicale(const char *msg, int ligne) {
 const char *nom_token(int tok) {
     switch(tok) {
         case ANNEE:      return "ANNEE";
-        case NIVEAU:     return "NIVEAU";
+        case NIVEAU_KW:  return "NIVEAU";
         case ETUDIANT:   return "ETUDIANT";
         case MATRICULE:  return "MATRICULE";
         case NOM_TOK:    return "NOM";
         case PRENOM_TOK: return "PRENOM";
         case SEMESTRE:   return "SEMESTRE";
-        case MODULE_TOK: return "MODULE";
+        case MODULE_KW:  return "MODULE";
         case COEF:       return "COEF";
         case NOTE:       return "NOTE";
         case L1:         return "L1";

@@ -1,34 +1,98 @@
+# =============================================================
 # Makefile - Systeme de Gestion des Notes (SGN)
+# Projet  : Compilation - Master 1 Informatique
 # Auteur  : [NOM1] [NOM2]
-# Usage   : make        -> compile tout
-#           make clean  -> supprime les fichiers generes
-#           make test   -> lance le test sur test_valide.sgn
+# Date    : 2025-2026
+#
+# Cibles :
+#   make          -> compile le projet complet
+#   make test     -> teste sur test_valide.sgn
+#   make test_err -> teste sur test_erreur_sem.sgn
+#   make debug    -> affiche l'AST (mode debug Bison)
+#   make clean    -> supprime les fichiers generes
+# =============================================================
 
 CC      = gcc
 CFLAGS  = -Wall -Wextra -g
 LIBS    = -lm
 TARGET  = sgn
 
+# Fichiers sources C (hors fichiers generes par flex/bison)
+SRCS_C  = main.c Symboles.c ast.c
+
+# Fichiers objets finaux
+OBJS    = lex.yy.o parser.tab.o symboles.o ast.o main.o
+
+# =============================================================
+# Cible principale
+# =============================================================
 all: $(TARGET)
 
-# Etape 1 : Bison genere parser.tab.c et parser.tab.h
+# =============================================================
+# Etape 1 : Bison -> parser.tab.c + parser.tab.h
+# =============================================================
 parser.tab.c parser.tab.h: parser.y
 	bison -d parser.y
 
-# Etape 2 : Flex genere lex.yy.c (necessite parser.tab.h pour les tokens)
+# =============================================================
+# Etape 2 : Flex -> lex.yy.c
+# (necessite parser.tab.h pour les tokens)
+# =============================================================
 lex.yy.c: lexer.l parser.tab.h
 	flex lexer.l
 
-# Etape 3 : Compilation finale
-$(TARGET): lex.yy.c parser.tab.c main.c
-	$(CC) $(CFLAGS) lex.yy.c parser.tab.c main.c -o $(TARGET) $(LIBS)
+# =============================================================
+# Etape 3 : Compilation des objets
+# =============================================================
+lex.yy.o: lex.yy.c parser.tab.h
+	$(CC) $(CFLAGS) -c lex.yy.c -o lex.yy.o
 
-# Test rapide
+parser.tab.o: parser.tab.c symboles.h ast.h
+	$(CC) $(CFLAGS) -c parser.tab.c -o parser.tab.o
+
+symboles.o: Symboles.c symboles.h
+	$(CC) $(CFLAGS) -c Symboles.c -o symboles.o
+
+ast.o: ast.c ast.h
+	$(CC) $(CFLAGS) -c ast.c -o ast.o
+
+main.o: main.c symboles.h ast.h
+	$(CC) $(CFLAGS) -c main.c -o main.o
+
+# =============================================================
+# Etape 4 : Edition de liens -> binaire final
+# =============================================================
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) -o $(TARGET) $(LIBS)
+
+# =============================================================
+# Tests
+# =============================================================
 test: $(TARGET)
+	@echo "=== Test fichier valide ==="
 	./$(TARGET) ../tests/test_valide.sgn
 
-# Nettoyage
-clean:
-	rm -f lex.yy.c parser.tab.c parser.tab.h $(TARGET)
+test_err: $(TARGET)
+	@echo "=== Test erreurs semantiques ==="
+	./$(TARGET) ../tests/test_erreur_sem.sgn 2>&1
 
-.PHONY: all test clean
+test_lex: $(TARGET)
+	@echo "=== Test erreurs lexicales ==="
+	./$(TARGET) ../tests/test_erreur_lex.sgn 2>&1
+
+# =============================================================
+# Debug : active les traces Bison (YYDEBUG)
+# =============================================================
+debug: CFLAGS += -DYYDEBUG=1
+debug: clean $(TARGET)
+
+# =============================================================
+# Nettoyage
+# =============================================================
+clean:
+	rm -f lex.yy.c lex.yy.o \
+	      parser.tab.c parser.tab.h parser.tab.o \
+	      symboles.o ast.o main.o \
+	      $(TARGET)
+
+.PHONY: all test test_err test_lex debug clean
