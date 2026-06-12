@@ -1,0 +1,135 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\geometry{hmargin=2.5cm,vmargin=2.5cm}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+\title{\textbf{Projet de Compilation - Master 1 Informatique} \\ Système de Gestion des Notes (SGN)}
+\author{Équipe de Projet}
+\date{Année Académique 2025-2026}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Introduction}
+Dans le cadre du module de Compilation du Master 1 Informatique, ce projet vise à concevoir et implémenter un Système de Gestion des Notes (SGN). L'objectif est d'appliquer les concepts théoriques des langages formels à travers la création d'un compilateur permettant l'analyse de fichiers de notes (extension \texttt{.sgn}) et le calcul automatique de diverses métriques (moyennes, rangs, mentions).
+
+Le projet s'articule autour de trois composants principaux : l'analyseur lexical réalisé avec Flex, l'analyseur syntaxique et sémantique implémenté avec Bison, et une interface graphique Python facilitant l'interaction avec le système.
+
+\section{Spécification du Langage}
+Le langage \texttt{.sgn} est structuré de manière hiérarchique : une année académique contient plusieurs niveaux, qui contiennent des étudiants, qui à leur tour ont des semestres contenant des modules avec des coefficients et des notes.
+
+\subsection{Grammaire Formelle (EBNF)}
+Voici la grammaire formelle retenue pour notre langage :
+\begin{lstlisting}
+<programme>       ::= ANNEE STRING <liste_niveaux>
+<liste_niveaux>   ::= <niveau> | <liste_niveaux> <niveau>
+<niveau>          ::= NIVEAU <id_niveau> '{' <liste_etudiants> '}'
+<id_niveau>       ::= L1 | L2 | L3
+<liste_etudiants> ::= <etudiant> | <liste_etudiants> <etudiant>
+<etudiant>        ::= ETUDIANT '{' MATRICULE ':' STRING 
+                                   NOM ':' STRING 
+                                   PRENOM ':' STRING 
+                                   <liste_semestres> '}'
+<liste_semestres> ::= <semestre> | <liste_semestres> <semestre>
+<semestre>        ::= SEMESTRE <id_sem> '{' <liste_modules> '}'
+<id_sem>          ::= S1 | S2 | S3 | S4 | S5 | S6
+<liste_modules>   ::= <module> | <liste_modules> <module>
+<module>          ::= MODULE STRING COEF ENTIER NOTE REEL
+\end{lstlisting}
+
+\section{Implémentation Flex (Analyseur Lexical)}
+L'analyseur lexical (\texttt{lexer.l}) est chargé de découper le flux de caractères en entités significatives appelées \textit{tokens}.
+
+\subsection{Règles Lexicales}
+Nous avons défini des expressions régulières pour identifier :
+\begin{itemize}
+    \item Les mots-clés : \texttt{ANNEE}, \texttt{NIVEAU}, \texttt{ETUDIANT}, \texttt{MODULE}, etc.
+    \item Les chaînes de caractères : \texttt{\textbackslash"[{\textasciicircum}\textbackslash"]*\textbackslash"}
+    \item Les nombres : Entiers (\texttt{[0-9]+}) et Réels (\texttt{[0-9]+\textbackslash.[0-9]+})
+\end{itemize}
+
+Les espaces, tabulations, retours à la ligne ainsi que les commentaires débutant par \texttt{--} sont ignorés par l'analyseur.
+
+\subsection{Gestion des Erreurs}
+En cas de caractère non reconnu, Flex lève une erreur en spécifiant le caractère fautif ainsi que le numéro de la ligne où l'erreur s'est produite grâce à la variable \texttt{yylineno}.
+
+\section{Implémentation Bison (Analyseur Syntaxique)}
+Le fichier \texttt{parser.y} définit l'analyseur syntaxique responsable de valider la structure des tokens produits par Flex et d'effectuer l'analyse sémantique.
+
+\subsection{Actions Sémantiques}
+Au cours de la réduction des règles, le parseur réalise les opérations suivantes :
+\begin{itemize}
+    \item \textbf{Vérification des bornes :} S'assure que les notes sont incluses dans l'intervalle [0, 20] et que les coefficients sont positifs.
+    \item \textbf{Cohérence des semestres :} Vérifie que les semestres correspondent bien au niveau de l'étudiant (ex: S1 et S2 pour L1).
+    \item \textbf{Calculs :} Calcule la somme des notes pondérées et des coefficients pour en déduire les moyennes semestrielles et annuelles.
+\end{itemize}
+
+\section{Structure de Données (AST)}
+Plutôt que d'évaluer le code à la volée, nous construisons un Arbre Syntaxique Abstrait (AST) couplé à une structure de symboles. 
+Cela permet :
+\begin{enumerate}
+    \item De conserver toutes les informations en mémoire.
+    \item D'effectuer des opérations globales telles que le calcul du rang des étudiants au sein d'un même niveau en triant les moyennes.
+    \item De générer en fin de processus un flux JSON formaté, affiché sur la sortie standard, qui sera consommé par l'interface Python.
+\end{enumerate}
+
+\section{Interface Python}
+Une application graphique a été développée pour simplifier l'utilisation de l'analyseur. Elle est conçue avec la bibliothèque standard \texttt{tkinter} et suit le modèle MVC.
+
+\subsection{Architecture}
+\begin{itemize}
+    \item \textbf{Interface Graphique (\texttt{interface.py}) :} Propose un éditeur de texte intégré, des boutons de contrôle et un tableau (\texttt{Treeview}) pour visualiser les résultats.
+    \item \textbf{Communication (\texttt{parser\_bridge.py}) :} Utilise \texttt{subprocess} pour exécuter le binaire C compilé, capture le flux JSON sur la sortie standard (\texttt{stdout}), le parse et transmet un dictionnaire Python à l'interface.
+\end{itemize}
+L'interface gère également la mise en évidence des erreurs (texte rouge) et offre une option d'exportation des données sous format CSV.
+
+\section{Tests et Validation}
+Le système a été validé à l'aide de plusieurs jeux de tests :
+\begin{itemize}
+    \item \textbf{Test Valide :} Un fichier correct couvrant différents niveaux. Le JSON produit est intègre et l'interface affiche correctement les résultats, les calculs de moyennes et de rangs étant justes.
+    \item \textbf{Test Erreur Lexicale :} Un fichier contenant des caractères non autorisés. Flex signale l'erreur avec le numéro de ligne.
+    \item \textbf{Test Erreur Syntaxique :} Oubli d'accolades ou de mots-clés. Bison intercepte l'erreur via \texttt{yyerror}.
+    \item \textbf{Test Erreur Sémantique :} Saisie d'une note > 20 ou affectation du semestre S3 à un étudiant de L1. Le système remonte l'erreur spécifiquement et refuse de traiter le fichier.
+\end{itemize}
+
+\section{Conclusion}
+Ce projet nous a permis d'assimiler les étapes de compilation d'un langage, depuis l'analyse lexicale jusqu'à l'évaluation sémantique. L'intégration réussie avec une interface Python moderne souligne la flexibilité des outils comme Flex et Bison, qui peuvent servir de backend solide (moteur d'analyse) pour des applications de haut niveau.
+
+Les difficultés rencontrées résidaient principalement dans la gestion mémoire de l'AST en C et la construction du JSON sans utiliser de bibliothèques tierces en C. L'architecture modulaire choisie rend le système aisément extensible pour, par exemple, ajouter de nouveaux champs ou prendre en charge le calcul des crédits ECTS.
+
+\end{document}

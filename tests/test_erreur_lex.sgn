@@ -1,0 +1,16 @@
+-- Test erreurs lexicales
+-- Caracteres invalides dans le fichier
+ANNEE "2025-2026"
+
+NIVEAU L1 {
+  ETUDIANT {
+    MATRICULE : "L1-2025-001"
+    NOM : "DIALLO"
+    PRENOM : "Mamadou"
+    SEMESTRE S1 {
+      MODULE "Algo" COEF 3 NOTE 14.5
+      MODULE "Maths" COEF 2 NOTE 12@ -- '@' est un caractere invalide
+      MODULE "Reseau" COEF 2 NOTE 10.0#  -- '#' est invalide
+    }
+  }
+}

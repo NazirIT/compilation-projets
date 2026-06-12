@@ -1,0 +1,22 @@
+-- Test erreurs syntaxiques
+ANNEE "2025-2026"
+
+NIVEAU L1 {
+  ETUDIANT {
+    MATRICULE : "L1-2025-001"
+    NOM : "DIALLO"
+    -- PRENOM manquant : erreur syntaxique
+    SEMESTRE S1 {
+      MODULE "Algo" COEF 3 NOTE 14.5
+    }
+  }
+  ETUDIANT {
+    MATRICULE : "L1-2025-002"
+    NOM : "NDIAYE"
+    PRENOM : "Fatou"
+    SEMESTRE S1 {
+      -- MODULE sans NOTE : erreur syntaxique
+      MODULE "Maths" COEF 4
+    }
+  }
+}

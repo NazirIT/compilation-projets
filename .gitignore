@@ -1,0 +1,25 @@
+# Objets compilés C
+*.o
+src/lex.yy.c
+src/parser.tab.c
+src/parser.tab.h
+
+# Binaire
+src/sgn
+
+# Fichiers Python
+__pycache__/
+*.py[cod]
+*~
+
+# Fichiers LaTeX générés (garder uniquement .tex et .pdf)
+rapport/*.aux
+rapport/*.log
+rapport/*.out
+rapport/*.toc
+rapport/*.fls
+rapport/*.fdb_latexmk
+rapport/*.synctex.gz
+
+# Configuration IDE
+.vscode/

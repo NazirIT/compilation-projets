@@ -1,0 +1,26 @@
+-- Test erreurs semantiques
+ANNEE "2025-2026"
+
+NIVEAU L1 {
+  ETUDIANT {
+    MATRICULE : "L1-2025-001"
+    NOM : "DIALLO"
+    PRENOM : "Mamadou"
+    SEMESTRE S1 {
+      MODULE "Algo"  COEF 3 NOTE 25.0  -- note > 20 : erreur semantique
+      MODULE "Maths" COEF 0 NOTE 12.0  -- coef = 0  : erreur semantique
+    }
+    -- S3 dans L1 : incoherence semestre/niveau
+    SEMESTRE S3 {
+      MODULE "Reseau" COEF 2 NOTE 14.0
+    }
+  }
+  ETUDIANT {
+    MATRICULE : "L1-2025-001"  -- doublon de matricule : erreur semantique
+    NOM : "NDIAYE"
+    PRENOM : "Fatou"
+    SEMESTRE S1 {
+      MODULE "Algo" COEF 3 NOTE 10.0
+    }
+  }
+}

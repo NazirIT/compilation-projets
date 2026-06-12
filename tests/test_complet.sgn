@@ -1,0 +1,27 @@
+-- Fichier notes complet
+ANNEE "2025-2026"
+
+NIVEAU L1 {
+    ETUDIANT {
+        MATRICULE : "L1-2025-001"
+        NOM : "DIALLO"
+        PRENOM : "Mamadou"
+        SEMESTRE S1 {
+            MODULE "Algorithmique" COEF 3 NOTE 14.5
+            MODULE "Mathematiques" COEF 4 NOTE 12.0
+        }
+        SEMESTRE S2 {
+            MODULE "Programmation C" COEF 3 NOTE 13.5
+            MODULE "Logique" COEF 3 NOTE 11.0
+        }
+    }
+    ETUDIANT {
+        MATRICULE : "L1-2025-002"
+        NOM : "NDIAYE"
+        PRENOM : "Fatou"
+        SEMESTRE S1 {
+            MODULE "Algorithmique" COEF 3 NOTE 9.5
+            MODULE "Mathematiques" COEF 4 NOTE 8.0
+        }
+    }
+}
