@@ -253,23 +253,6 @@ class ResultsPanel(QWidget):
         title.setStyleSheet("color:#555; letter-spacing:1px; border:none; background:transparent;")
         hl.addWidget(title)
         hl.addStretch()
-
-        self.btn_export = QPushButton("⬇  Export")
-        self.btn_export.setFixedSize(100, 30)
-        self.btn_export.setStyleSheet("""
-            QPushButton {
-                background: #1a6fcf;
-                color: white;
-                border: none;
-                border-radius: 7px;
-                font-size: 13px;
-                font-weight: bold;
-                padding: 0 12px;
-            }
-            QPushButton:hover { background: #155bb5; }
-            QPushButton:pressed { background: #104a96; }
-        """)
-        hl.addWidget(self.btn_export)
         layout.addWidget(header)
 
         # ── Table ──
@@ -311,7 +294,8 @@ class ResultsPanel(QWidget):
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.setShowGrid(False)
         self.table.setAlternatingRowColors(False)
-        self.table.verticalHeader().setDefaultSectionSize(52)
+        self.table.verticalHeader().setMinimumSectionSize(52)
+        self.table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
 
         columns = ["Matricule", "Nom & Prénom", "Niveau",
                    "Moy. Semestre(s)", "Moy. Annuelle", "Rang", "Mention", "Décision"]
@@ -320,14 +304,14 @@ class ResultsPanel(QWidget):
         self.table.setRowCount(0)
 
         # Largeurs colonnes
-        self.table.setColumnWidth(0, 120)
+        self.table.setColumnWidth(0, 180)
         self.table.setColumnWidth(1, 150)
         self.table.setColumnWidth(2, 70)
-        self.table.setColumnWidth(3, 170)
+        self.table.setColumnWidth(3, 200)
         self.table.setColumnWidth(4, 120)
         self.table.setColumnWidth(5, 60)
-        self.table.setColumnWidth(6, 110)
-        self.table.setColumnWidth(7, 100)
+        self.table.setColumnWidth(6, 180)
+        self.table.setColumnWidth(7, 80)
 
         layout.addWidget(self.table)
 
@@ -382,16 +366,16 @@ class ResultsPanel(QWidget):
     def _badge(self, text, color):
         container = QWidget()
         lay = QHBoxLayout(container)
-        lay.setContentsMargins(14, 0, 4, 0)
+        lay.setContentsMargins(14, 4, 4, 4)
         lbl = QLabel(text)
         lbl.setFont(QFont("Segoe UI", 11, QFont.Bold))
         lbl.setAlignment(Qt.AlignCenter)
-        lbl.setFixedHeight(26)
+        lbl.setMinimumHeight(26)
         lbl.setStyleSheet(f"""
             color: {color};
             border: 1.5px solid {color};
             border-radius: 5px;
-            padding: 0 8px;
+            padding: 2px 8px;
         """)
         lay.addWidget(lbl)
         lay.addStretch()
@@ -411,9 +395,6 @@ class SGNAnalyzer(QMainWindow):
         self.resize(1280, 800)
         self._build_ui()
         self._apply_global_style()
-
-        # Connecter le bouton export du panneau Results
-        self.results.btn_export.clicked.connect(self.export_csv)
 
     def _apply_global_style(self):
         self.setStyleSheet("""
