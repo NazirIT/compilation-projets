@@ -1,17 +1,6 @@
-/*
- * lexer.l - Analyseur Lexical Flex
- * Projet  : Systeme de Gestion des Notes (SGN)
- * Module  : Compilation - Master 1 Informatique
- * Auteur  : [NOM1] [NOM2]
- * Date    : 2025-2026
- *
- * Compilation : flex lexer.l
- * Test seul   : flex lexer.l && gcc -DTEST_LEXER_ONLY lex.yy.c -o test_lexer
- */
 
-/* ========================================================
-   SECTION 1 : Declarations C et options Flex
-   ======================================================== */
+
+/* SECTION 1 : Declarations C et options Flex*/
 %{
 #include <stdio.h>
 #include <stdlib.h>
@@ -113,10 +102,8 @@ STRING_DEF  \"[^"\n]*\"
 
 %%
 
-/* ========================================================
-   SECTION 3 : Fonctions C
-   ======================================================== */
-
+/*SECTION 3 : Fonctions C*/
+  
 void erreur_lexicale(const char *msg, int ligne) {
     fprintf(stderr, "[ERREUR LEXICALE] Ligne %d : %s\n", ligne, msg);
 }

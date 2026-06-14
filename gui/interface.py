@@ -18,9 +18,9 @@ from PyQt5.QtCore import Qt, QRegExp, QSize
 from PyQt5.QtWidgets import QTextEdit
 
 
-# ═══════════════════════════════════════════════
+
 #  SYNTAX HIGHLIGHTER pour l'éditeur SGN
-# ═══════════════════════════════════════════════
+
 class SGNHighlighter(QSyntaxHighlighter):
     def __init__(self, document):
         super().__init__(document)
@@ -58,9 +58,9 @@ class SGNHighlighter(QSyntaxHighlighter):
                 idx = pattern.indexIn(text, idx + length)
 
 
-# ═══════════════════════════════════════════════
+
 #  WIDGET : Éditeur de code (panneau gauche)
-# ═══════════════════════════════════════════════
+
 class CodeEditor(QWidget):
     def __init__(self):
         super().__init__()
@@ -134,9 +134,8 @@ class CodeEditor(QWidget):
         self.editor.setPlainText(code)
 
 
-# ═══════════════════════════════════════════════
 #  WIDGET : Console Logs
-# ═══════════════════════════════════════════════
+
 class ConsolePanel(QWidget):
     def __init__(self):
         super().__init__()
@@ -196,23 +195,23 @@ class ConsolePanel(QWidget):
                 child.widget().deleteLater()
                 
         if not erreurs:
-            success = QLabel("✅  Analyse réussie. Aucune erreur.")
+            success = QLabel("  Analyse réussie. Aucune erreur.")
             success.setFont(QFont("Segoe UI", 11, QFont.Bold))
             success.setStyleSheet("color:#22a855; margin-top:6px; border:none; background:transparent;")
             self.bl.addWidget(success)
         else:
             mono = QFont("Consolas", 11)
             for err in erreurs:
-                lbl = QLabel("❌ " + err)
+                lbl = QLabel("❌" + err)
                 lbl.setFont(mono)
                 lbl.setStyleSheet("color:#e05252; border:none; background:transparent;")
                 lbl.setWordWrap(True)
                 self.bl.addWidget(lbl)
 
 
-# ═══════════════════════════════════════════════
+
 #  WIDGET : Tableau de résultats
-# ═══════════════════════════════════════════════
+
 class ResultsPanel(QWidget):
     def __init__(self):
         super().__init__()
@@ -382,9 +381,9 @@ class ResultsPanel(QWidget):
         return container
 
 
-# ═══════════════════════════════════════════════
+
 #  FENÊTRE PRINCIPALE
-# ═══════════════════════════════════════════════
+
 class SGNAnalyzer(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -584,6 +583,5 @@ class SGNAnalyzer(QMainWindow):
             QMessageBox.critical(self, "Erreur d'export", str(e))
 
 
-# ═══════════════════════════════════════════════
+
 #  POINT D'ENTRÉE
-# ═══════════════════════════════════════════════

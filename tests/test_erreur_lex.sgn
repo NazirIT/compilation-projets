@@ -1,16 +1,37 @@
--- Test erreurs lexicales
--- Caracteres invalides dans le fichier
+--Test les erreurs lexicales
+
 ANNEE "2025-2026"
 
 NIVEAU L1 {
-  ETUDIANT {
-    MATRICULE : "L1-2025-001"
-    NOM : "DIALLO"
-    PRENOM : "Mamadou"
-    SEMESTRE S1 {
-      MODULE "Algo" COEF 3 NOTE 14.5
-      MODULE "Maths" COEF 2 NOTE 12@ -- '@' est un caractere invalide
-      MODULE "Reseau" COEF 2 NOTE 10.0#  -- '#' est invalide
+    ETUDIANT {
+        MATRICULE : "L1-2025-010"
+        NOM : "DIOP Moussa"
+        PRENOM : "Moussa"
+        SEMESTRE S1 {
+            -- Erreur 1 : '@' n'est pas un caractere valide
+            MODULE "Algorithmique" COEF 3 NOTE 14@5
+            MODULE "Mathematiques" COEF 4 NOTE 12.0
+        }
     }
-  }
+    ETUDIANT {
+        MATRICULE : "L1-2025-011"
+        NOM : "SARR Bineta
+        PRENOM : "Bineta"
+        SEMESTRE S1 {
+            -- Erreur 2 : guillemet non ferme sur NOM ligne 18
+            MODULE "Reseaux" COEF 2 NOTE 13.0
+            -- Erreur 3 : caractere '#' invalide
+            MODULE #Logique" COEF 3 NOTE 11.0
+        }
+    }
+    ETUDIANT {
+        MATRICULE : "L1-2025-012"
+        NOM : "CISSE Adja"
+        PRENOM : "Adja"
+        SEMESTRE S2 {
+            MODULE "Programmation C" COEF 3 NOTE 15.0
+            -- Erreur 4 : caractere '$' invalide
+            MODULE "Systemes" COEF $2 NOTE 14.0
+        }
+    }
 }

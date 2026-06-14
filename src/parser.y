@@ -1,18 +1,6 @@
-/*
- * parser.y - Analyseur Syntaxique et Semantique Bison
- * Projet  : Systeme de Gestion des Notes (SGN)
- * Module  : Compilation - Master 1 Informatique
- * Auteur  : [NOM1] [NOM2]
- * Date    : 2025-2026
- *
- * Compilation : bison -d parser.y   -> parser.tab.c + parser.tab.h
- * Puis         : flex lexer.l       -> lex.yy.c
- * Puis         : make               -> binaire sgn
- */
 
-/* ========================================================
-   SECTION 1 : Declarations C
-   ======================================================== */
+
+/* SECTION 1 : Declarations C*/
 %{
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,9 +9,8 @@
 #include "symboles.h"
 #include "ast.h"
 
-/* --------------------------------------------------------
-   Variables globales
-   -------------------------------------------------------- */
+/* Variables globales */
+
 Programme    g_programme;              /* donnees parsees       */
 TableSymboles g_table;                 /* table de symboles     */
 ASTNode      *g_ast_racine = NULL;     /* racine de l'AST       */
@@ -39,18 +26,16 @@ ASTNode  *g_ast_niveau_courant   = NULL;
 ASTNode  *g_ast_etudiant_courant = NULL;
 ASTNode  *g_ast_semestre_courant = NULL;
 
-/* --------------------------------------------------------
-   Prototypes
-   -------------------------------------------------------- */
+/* Prototypes */
+
 void yyerror(const char *msg);
 int  yylex(void);
 extern int yylineno;
 void afficher_json_global(void);
 %}
 
-/* ========================================================
-   SECTION 2 : Declarations Bison
-   ======================================================== */
+/* SECTION 2 : Declarations Bison*/
+
 %union {
     double  reel;
     int     entier;
@@ -69,14 +54,11 @@ void afficher_json_global(void);
 
 %type <chaine> id_niveau id_semestre
 
-/* ========================================================
-   SECTION 3 : Regles de grammaire
-   ======================================================== */
+/* SECTION 3 : Regles de grammaire */
 %%
 
-/* --------------------------------------------------------
-   programme ::= ANNEE STRING liste_niveaux
-   -------------------------------------------------------- */
+/* programme ::= ANNEE STRING liste_niveaux */
+
 programme
     : ANNEE STRING liste_niveaux
         {
@@ -89,17 +71,15 @@ programme
         }
     ;
 
-/* --------------------------------------------------------
-   liste_niveaux ::= niveau | liste_niveaux niveau
-   -------------------------------------------------------- */
+/* liste_niveaux ::= niveau | liste_niveaux niveau */
+
 liste_niveaux
     : niveau
     | liste_niveaux niveau
     ;
 
-/* --------------------------------------------------------
-   niveau ::= NIVEAU id_niveau '{' liste_etudiants '}'
-   -------------------------------------------------------- */
+/* niveau ::= NIVEAU id_niveau '{' liste_etudiants '}' */
+
 niveau
     : NIVEAU_KW id_niveau LBRACE
         {
@@ -124,26 +104,23 @@ niveau
         }
     ;
 
-/* --------------------------------------------------------
-   id_niveau ::= L1 | L2 | L3
-   -------------------------------------------------------- */
+/* id_niveau ::= L1 | L2 | L3 */
+
 id_niveau
     : L1  { $$ = strdup("L1"); }
     | L2  { $$ = strdup("L2"); }
     | L3  { $$ = strdup("L3"); }
     ;
 
-/* --------------------------------------------------------
-   liste_etudiants ::= etudiant | liste_etudiants etudiant
-   -------------------------------------------------------- */
+/* liste_etudiants ::= etudiant | liste_etudiants etudiant */
+
 liste_etudiants
     : etudiant
     | liste_etudiants etudiant
     ;
 
-/* --------------------------------------------------------
-   etudiant ::= ETUDIANT '{' champs_etudiant liste_semestres '}'
-   -------------------------------------------------------- */
+/* etudiant ::= ETUDIANT '{' champs_etudiant liste_semestres '}' */
+
 etudiant
     : ETUDIANT LBRACE
         {
@@ -168,11 +145,8 @@ etudiant
         }
     ;
 
-/* --------------------------------------------------------
-   champs_etudiant ::= MATRICULE ':' STRING
-                       NOM ':' STRING
-                       PRENOM ':' STRING
-   -------------------------------------------------------- */
+/* champs_etudiant ::= MATRICULE ':' STRING NOM ':' STRING PRENOM ':' STRING */
+
 champs_etudiant
     : MATRICULE COLON STRING
       NOM_TOK   COLON STRING
@@ -206,17 +180,15 @@ champs_etudiant
         }
     ;
 
-/* --------------------------------------------------------
-   liste_semestres ::= semestre | liste_semestres semestre
-   -------------------------------------------------------- */
+/* liste_semestres ::= semestre | liste_semestres semestre */
+
 liste_semestres
     : semestre
     | liste_semestres semestre
     ;
 
-/* --------------------------------------------------------
-   semestre ::= SEMESTRE id_semestre '{' liste_modules '}'
-   -------------------------------------------------------- */
+/* semestre ::= SEMESTRE id_semestre '{' liste_modules '}' */
+
 semestre
     : SEMESTRE id_semestre LBRACE
         {
@@ -246,9 +218,8 @@ semestre
         }
     ;
 
-/* --------------------------------------------------------
-   id_semestre ::= S1 | S2 | S3 | S4 | S5 | S6
-   -------------------------------------------------------- */
+/* id_semestre ::= S1 | S2 | S3 | S4 | S5 | S6 */
+
 id_semestre
     : S1  { $$ = strdup("S1"); }
     | S2  { $$ = strdup("S2"); }
@@ -258,17 +229,15 @@ id_semestre
     | S6  { $$ = strdup("S6"); }
     ;
 
-/* --------------------------------------------------------
-   liste_modules ::= module | liste_modules module
-   -------------------------------------------------------- */
+/* liste_modules ::= module | liste_modules module */
+
 liste_modules
     : module
     | liste_modules module
     ;
 
-/* --------------------------------------------------------
-   module ::= MODULE STRING COEF ENTIER NOTE REEL
-   -------------------------------------------------------- */
+/* module ::= MODULE STRING COEF ENTIER NOTE REEL */
+
 module
     : MODULE_KW STRING COEF ENTIER NOTE REEL
         {
@@ -293,22 +262,17 @@ module
 
 %%
 
-/* ========================================================
-   SECTION 4 : Fonctions C
-   ======================================================== */
+/* SECTION 4 : Fonctions C */
 
-/* --------------------------------------------------------
-   yyerror : appelee par Bison sur erreur syntaxique
-   -------------------------------------------------------- */
+/* yyerror : appelee par Bison sur erreur syntaxique */
 void yyerror(const char *msg) {
     fprintf(stderr, "[ERREUR SYNTAXIQUE] Ligne %d : %s\n",
             yylineno, msg);
     g_erreurs++;
 }
 
-/* --------------------------------------------------------
-   verifier_note : note dans [0.0, 20.0]
-   -------------------------------------------------------- */
+/* verifier_note : note dans [0.0, 20.0] */
+
 void verifier_note(double note, int ligne) {
     if (note < NOTE_MIN || note > NOTE_MAX) {
         fprintf(stderr,
@@ -319,9 +283,8 @@ void verifier_note(double note, int ligne) {
     }
 }
 
-/* --------------------------------------------------------
-   verifier_coef : coefficient >= 1
-   -------------------------------------------------------- */
+/* verifier_coef : coefficient >= 1 */
+
 void verifier_coef(int coef, int ligne) {
     if (coef < COEF_MIN) {
         fprintf(stderr,
@@ -332,9 +295,8 @@ void verifier_coef(int coef, int ligne) {
     }
 }
 
-/* --------------------------------------------------------
-   verifier_semestre_niveau : coherence L1->S1,S2 etc.
-   -------------------------------------------------------- */
+/* verifier_semestre_niveau : coherence L1->S1,S2 etc. */
+
 void verifier_semestre_niveau(const char *id_sem,
                                const char *id_niv) {
     int ok = 0;
@@ -354,10 +316,8 @@ void verifier_semestre_niveau(const char *id_sem,
     }
 }
 
-/* --------------------------------------------------------
-   calculer_moyenne_semestre
-   M = sum(coef_i * note_i) / sum(coef_i)
-   -------------------------------------------------------- */
+/* calculer_moyenne_semestre M = sum(coef_i * note_i) / sum(coef_i) */
+
 double calculer_moyenne_semestre(Semestre *s) {
     double sum_poids = 0.0, sum_coefs = 0.0;
     int i;
@@ -369,10 +329,8 @@ double calculer_moyenne_semestre(Semestre *s) {
     return (sum_coefs == 0.0) ? 0.0 : sum_poids / sum_coefs;
 }
 
-/* --------------------------------------------------------
-   calculer_moyenne_annuelle
-   Moyenne arithmetique des moyennes semestrielles
-   -------------------------------------------------------- */
+/* calculer_moyenne_annuelle : moyenne arithmetique des moyennes semestrielles */
+
 double calculer_moyenne_annuelle(Etudiant *e) {
     double total = 0.0;
     int i;
@@ -382,9 +340,8 @@ double calculer_moyenne_annuelle(Etudiant *e) {
     return total / e->nb_semestres;
 }
 
-/* --------------------------------------------------------
-   calculer_mention
-   -------------------------------------------------------- */
+/* calculer_mention */
+
 void calculer_mention(Etudiant *e) {
     double m = e->moyenne_annuelle;
     if      (m >= 16.0) { strcpy(e->mention,"Tres Bien");  strcpy(e->decision,"Admis");   }
@@ -394,9 +351,8 @@ void calculer_mention(Etudiant *e) {
     else                { strcpy(e->mention,"");            strcpy(e->decision,"Ajourne"); }
 }
 
-/* --------------------------------------------------------
-   calculer_rangs
-   -------------------------------------------------------- */
+/* calculer_rangs */
+
 void calculer_rangs(Niveau *niv) {
     int i, j, n = niv->nb_etudiants;
     for (i = 0; i < n; i++) niv->etudiants[i].rang = 1;
@@ -408,9 +364,8 @@ void calculer_rangs(Niveau *niv) {
                 niv->etudiants[i].rang++;
 }
 
-/* --------------------------------------------------------
-   json_string_safe : echappe les caracteres speciaux JSON
-   -------------------------------------------------------- */
+/* json_string_safe : echappe les caracteres speciaux JSON */
+
 void json_string_safe(const char *s) {
     if (!s) return;
     while (*s) {
@@ -426,9 +381,8 @@ void json_string_safe(const char *s) {
     }
 }
 
-/* --------------------------------------------------------
-   afficher_json : sortie JSON sur stdout pour Python
-   -------------------------------------------------------- */
+/* afficher_json : sortie JSON sur stdout pour Python */
+
 void afficher_json(Programme *p) {
     int ni, ne, ns, nm;
     printf("{\n");
@@ -490,9 +444,8 @@ void afficher_json(Programme *p) {
     printf("}\n");
 }
 
-/* --------------------------------------------------------
-   afficher_json_global : appelee par main.c
-   -------------------------------------------------------- */
+/* afficher_json_global : appelee par main.c */
+
 void afficher_json_global(void) {
     /* Optionnel : afficher l'AST sur stderr pour le debug */
     /* ast_afficher(g_ast_racine, 0); */

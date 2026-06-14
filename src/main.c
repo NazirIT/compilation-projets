@@ -1,13 +1,4 @@
-/*
- * main.c - Point d'entree du programme SGN
- * Projet  : Systeme de Gestion des Notes (SGN)
- * Module  : Compilation - Master 1 Informatique
- * Auteur  : [NOM1] [NOM2]
- * Date    : 2025-2026
- *
- * Usage : ./sgn fichier.sgn
- *         ./sgn < fichier.sgn
- */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "symboles.h"

@@ -1,22 +1,45 @@
 -- Test erreurs syntaxiques
+
 ANNEE "2025-2026"
 
 NIVEAU L1 {
-  ETUDIANT {
-    MATRICULE : "L1-2025-001"
-    NOM : "DIALLO"
-    -- PRENOM manquant : erreur syntaxique
-    SEMESTRE S1 {
-      MODULE "Algo" COEF 3 NOTE 14.5
+    ETUDIANT {
+        MATRICULE : "L1-2025-020"
+        NOM : "GUEYE Pape"
+        -- Erreur 1 : PRENOM manquant, on passe directement a SEMESTRE
+        SEMESTRE S1 {
+            MODULE "Algorithmique" COEF 3 NOTE 14.0
+            MODULE "Mathematiques" COEF 2 NOTE 13.0
+        }
     }
-  }
-  ETUDIANT {
-    MATRICULE : "L1-2025-002"
-    NOM : "NDIAYE"
-    PRENOM : "Fatou"
-    SEMESTRE S1 {
-      -- MODULE sans NOTE : erreur syntaxique
-      MODULE "Maths" COEF 4
+    ETUDIANT {
+        MATRICULE : "L1-2025-021"
+        NOM : "TOURE Aissatou"
+        PRENOM : "Aissatou"
+        SEMESTRE S1 {
+            MODULE "Algorithmique" COEF 3 NOTE 12.0
+            MODULE "Mathematiques" COEF 4 NOTE 11.0
+        -- Erreur 2 : accolade fermante manquante pour SEMESTRE S1
+        SEMESTRE S2 {
+            MODULE "Reseaux" COEF 2 NOTE 15.0
+        }
     }
-  }
+    ETUDIANT {
+        MATRICULE : "L1-2025-022"
+        NOM : "BADJI Lamine"
+        PRENOM : "Lamine"
+        SEMESTRE S1 {
+            -- Erreur 3 : mot-cle NOTE absent
+            MODULE "Algorithmique" COEF 3 14.0
+            MODULE "Mathematiques" COEF 2 NOTE 10.0
+        }
+    }
+    ETUDIANT {
+        -- Erreur 4 : MATRICULE absent
+        NOM : "MENDY Sophie"
+        PRENOM : "Sophie"
+        SEMESTRE S2 {
+            MODULE "Reseaux" COEF 2 NOTE 13.0
+        }
+    }
 }

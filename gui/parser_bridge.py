@@ -12,7 +12,6 @@ def run_parser(file_path):
     Returns:
         dict: Le résultat de l'analyse sous forme de dictionnaire Python.
     """
-    # Le binaire se trouve dans le dossier src/ qui est au même niveau que gui/
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     parser_executable = os.path.join(base_dir, 'src', 'sgn')
     
@@ -29,7 +28,7 @@ def run_parser(file_path):
             [parser_executable, file_path],
             capture_output=True,
             text=True,
-            check=False # On ne lève pas d'exception si le code de retour n'est pas 0 (le parseur gère ses erreurs)
+            check=False 
         )
         
         # Le binaire renvoie du JSON sur stdout

@@ -1,20 +1,11 @@
-/*
- * symboles.c - Implementation de la table de symboles
- * Projet  : Systeme de Gestion des Notes (SGN)
- * Module  : Compilation - Master 1 Informatique
- * Auteur  : [NOM1] [NOM2]
- * Date    : 2025-2026
- */
+
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "symboles.h"
 
-/* ========================================================
-   symb_initialiser
-   Remet a zero toute la table avant le parsing.
-   ======================================================== */
+
 void symb_initialiser(TableSymboles *table) {
     int i;
     for (i = 0; i < TAILLE_TABLE; i++) {
@@ -26,13 +17,7 @@ void symb_initialiser(TableSymboles *table) {
     table->nb_entrees = 0;
 }
 
-/* ========================================================
-   symb_inserer
-   Insere un matricule dans la table.
-   Retourne  0 si insertion OK
-   Retourne -1 si doublon detecte (matricule deja present)
-   Retourne -2 si table pleine
-   ======================================================== */
+
 int symb_inserer(TableSymboles *table,
                  const char    *matricule,
                  const char    *niveau_id,
@@ -72,11 +57,7 @@ int symb_inserer(TableSymboles *table,
     return -2;
 }
 
-/* ========================================================
-   symb_chercher
-   Recherche lineaire dans la table par matricule.
-   Retourne un pointeur vers l'entree si trouvee, NULL sinon.
-   ======================================================== */
+
 EntreeSymbole *symb_chercher(TableSymboles *table,
                               const char    *matricule) {
     int i;
@@ -89,11 +70,7 @@ EntreeSymbole *symb_chercher(TableSymboles *table,
     return NULL;
 }
 
-/* ========================================================
-   symb_afficher
-   Affiche le contenu complet de la table sur stderr.
-   Utile pour le debug et le rapport.
-   ======================================================== */
+
 void symb_afficher(TableSymboles *table) {
     int i;
     fprintf(stderr, "=== Table de Symboles (%d entree(s)) ===\n",

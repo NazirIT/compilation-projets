@@ -8,10 +8,7 @@
 /* Capacite initiale du tableau d'enfants */
 #define CAPACITE_INITIALE 4
 
-/* ========================================================
-   ast_creer_noeud
-   Alloue un noeud, copie la valeur chaine si fournie.
-   ======================================================== */
+
 ASTNode *ast_creer_noeud(NodeType type, const char *valeur, int ligne)
 {
     ASTNode *n = (ASTNode *)malloc(sizeof(ASTNode));
@@ -58,11 +55,7 @@ ASTNode *ast_creer_noeud(NodeType type, const char *valeur, int ligne)
     return n;
 }
 
-/* ========================================================
-   ast_creer_module
-   Cree un noeud MODULE avec ses trois attributs :
-   nom (chaine), coef (entier), note (reel).
-   ======================================================== */
+
 ASTNode *ast_creer_module(const char *nom, int coef,
                           double note, int ligne)
 {
@@ -74,11 +67,7 @@ ASTNode *ast_creer_module(const char *nom, int coef,
     return n;
 }
 
-/* ========================================================
-   ast_ajouter_enfant
-   Ajoute enfant au tableau d'enfants de parent.
-   Redimensionne le tableau si necessaire (x2).
-   ======================================================== */
+
 void ast_ajouter_enfant(ASTNode *parent, ASTNode *enfant)
 {
     if (!parent || !enfant)
@@ -105,11 +94,7 @@ void ast_ajouter_enfant(ASTNode *parent, ASTNode *enfant)
     parent->nb_enfants++;
 }
 
-/* ========================================================
-   ast_nom_type
-   Retourne une chaine lisible pour un type de noeud.
-   Utile pour l'affichage de debug.
-   ======================================================== */
+
 const char *ast_nom_type(NodeType type)
 {
     switch (type)
@@ -137,7 +122,7 @@ const char *ast_nom_type(NodeType type)
     }
 }
 
-/* ========================================================
+/* 
    ast_afficher
    Affiche recursivement l'arbre avec indentation.
    Chaque niveau d'arbre ajoute 2 espaces.
@@ -148,7 +133,7 @@ const char *ast_nom_type(NodeType type)
            [MATRICULE] L1-2025-001
            [SEMESTRE] S1
              [MODULE] Algorithmique coef=3 note=14.50
-   ======================================================== */
+*/
 void ast_afficher(ASTNode *noeud, int niveau)
 {
     int i;
@@ -195,11 +180,7 @@ void ast_afficher(ASTNode *noeud, int niveau)
     }
 }
 
-/* ========================================================
-   ast_liberer
-   Libere recursivement toute la memoire allouee par l'AST.
-   Parcours post-ordre : on libere les enfants avant le parent.
-   ======================================================== */
+
 void ast_liberer(ASTNode *noeud)
 {
     int i;

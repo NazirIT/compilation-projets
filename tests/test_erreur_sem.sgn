@@ -1,26 +1,50 @@
--- Test erreurs semantiques
+--Teste les erreur semantiques
+
+
 ANNEE "2025-2026"
 
 NIVEAU L1 {
-  ETUDIANT {
-    MATRICULE : "L1-2025-001"
-    NOM : "DIALLO"
-    PRENOM : "Mamadou"
-    SEMESTRE S1 {
-      MODULE "Algo"  COEF 3 NOTE 25.0  -- note > 20 : erreur semantique
-      MODULE "Maths" COEF 0 NOTE 12.0  -- coef = 0  : erreur semantique
+    ETUDIANT {
+        MATRICULE : "L1-2025-030"
+        NOM : "DIOUF Serigne"
+        PRENOM : "Serigne"
+        SEMESTRE S1 {
+            -- Erreur 1 : coefficient 0 invalide
+            MODULE "Algorithmique" COEF 0 NOTE 14.5
+            -- Erreur 2 : note 25.0 hors intervalle
+            MODULE "Mathematiques" COEF 4 NOTE 25.0
+            -- Erreur 3 : note negative hors intervalle
+            MODULE "Architecture"  COEF 2 NOTE -3.0
+            MODULE "Anglais"       COEF 1 NOTE 15.0
+        }
+        -- Erreur 4 : S4 n'appartient pas a L1 (L1 -> S1, S2)
+        SEMESTRE S4 {
+            MODULE "Physique" COEF 2 NOTE 12.0
+        }
     }
-    -- S3 dans L1 : incoherence semestre/niveau
-    SEMESTRE S3 {
-      MODULE "Reseau" COEF 2 NOTE 14.0
+    ETUDIANT {
+        -- Erreur 5 : matricule deja utilise dans ce niveau L1
+        MATRICULE : "L1-2025-030"
+        NOM : "FAYE Rokhaya"
+        PRENOM : "Rokhaya"
+        SEMESTRE S1 {
+            MODULE "Algorithmique"  COEF 3 NOTE 11.0
+            MODULE "Mathematiques"  COEF 4 NOTE 10.5
+        }
+        SEMESTRE S2 {
+            MODULE "Programmation C" COEF 3 NOTE 13.0
+        }
     }
-  }
-  ETUDIANT {
-    MATRICULE : "L1-2025-001"  -- doublon de matricule : erreur semantique
-    NOM : "NDIAYE"
-    PRENOM : "Fatou"
-    SEMESTRE S1 {
-      MODULE "Algo" COEF 3 NOTE 10.0
+    ETUDIANT {
+        MATRICULE : "L1-2025-031"
+        NOM : "DIATTA Binta"
+        PRENOM : "Binta"
+        SEMESTRE S1 {
+            MODULE "Algorithmique"  COEF 3 NOTE 16.0
+            MODULE "Mathematiques"  COEF 4 NOTE 15.5
+        }
+        SEMESTRE S2 {
+            MODULE "Programmation C" COEF 3 NOTE 14.5
+        }
     }
-  }
 }

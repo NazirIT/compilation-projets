@@ -1,33 +1,12 @@
-/*
- * ast.h - Definition de l'Arbre Syntaxique Abstrait (AST)
- * Projet  : Systeme de Gestion des Notes (SGN)
- * Module  : Compilation - Master 1 Informatique
- * Auteur  : [NOM1] [NOM2]
- * Date    : 2025-2026
- *
- * L'AST represente la structure hierarchique d'un fichier .sgn
- * sous forme d'arbre : chaque noeud a un type, une valeur
- * optionnelle, et une liste d'enfants.
- *
- * Hierarchie :
- *   NODE_PROGRAMME
- *     └── NODE_NIVEAU (L1/L2/L3)
- *           └── NODE_ETUDIANT
- *                 ├── NODE_MATRICULE
- *                 ├── NODE_NOM
- *                 ├── NODE_PRENOM
- *                 └── NODE_SEMESTRE (S1..S6)
- *                       └── NODE_MODULE (nom, coef, note)
- */
+
 
 #ifndef AST_H
 #define AST_H
 
 #include <stdio.h>
 
-/* ========================================================
-   Types de noeuds de l'AST
-   ======================================================== */
+/* Types de noeuds de l'AST*/
+
 typedef enum {
     NODE_PROGRAMME,   /* racine : contient l'annee           */
     NODE_NIVEAU,      /* L1, L2 ou L3                        */
@@ -40,27 +19,17 @@ typedef enum {
     NODE_ANNEE        /* valeur de l'annee academique        */
 } NodeType;
 
-/* ========================================================
-   Valeur d'un noeud (union)
-   Un noeud peut stocker soit une chaine, soit un entier,
-   soit un reel, selon son type.
-   ======================================================== */
+
 typedef union {
-    char   *chaine;   /* pour NODE_PROGRAMME, NODE_NIVEAU,
-                         NODE_ETUDIANT, NODE_MATRICULE,
-                         NODE_NOM, NODE_PRENOM, NODE_SEMESTRE,
-                         NODE_ANNEE, NODE_MODULE (nom)       */
+    char   *chaine;   /* pour NODE_PROGRAMME, NODE_NIVEAU, NODE_ETUDIANT, NODE_MATRICULE, NODE_NOM, NODE_PRENOM, NODE_SEMESTRE, NODE_ANNEE, NODE_MODULE (nom)       */
     int     entier;   /* pour le coefficient d'un module     */
     double  reel;     /* pour la note d'un module            */
 } NodeValue;
 
-/* ========================================================
-   Structure d'un noeud AST
-   ======================================================== */
+
 typedef struct ASTNode {
     NodeType  type;           /* type du noeud               */
     NodeValue valeur;         /* valeur principale           */
-
     /* Donnees supplementaires selon le type :
        Pour NODE_MODULE : coef et note en plus du nom        */
     int       coef;           /* coefficient (NODE_MODULE)   */
@@ -75,9 +44,7 @@ typedef struct ASTNode {
     int ligne;
 } ASTNode;
 
-/* ========================================================
-   Prototypes des fonctions AST
-   ======================================================== */
+/* Prototypes des fonctions AST  */
 
 /**
  * ast_creer_noeud
