@@ -22,6 +22,10 @@ from PyQt5.QtWidgets import QTextEdit
 #  SYNTAX HIGHLIGHTER pour l'éditeur SGN
 
 class SGNHighlighter(QSyntaxHighlighter):
+    """
+    Classe permettant de gérer la coloration syntaxique du code SGN 
+    dans la zone d'édition en fonction d'expressions régulières.
+    """
     def __init__(self, document):
         super().__init__(document)
         self.rules = []
@@ -385,10 +389,14 @@ class ResultsPanel(QWidget):
 #  FENÊTRE PRINCIPALE
 
 class SGNAnalyzer(QMainWindow):
+    """
+    Fenêtre principale de l'application.
+    Gère l'intégration de l'éditeur de code, de la console et des résultats.
+    """
     def __init__(self):
         super().__init__()
-        self.current_file = None
-        self.last_results = []
+        self.current_file = None # Fichier SGN actuellement ouvert
+        self.last_results = []   # Cache des derniers résultats d'analyse
         self.setWindowTitle("SGN Analyzer - Master 1 Compilation")
         self.setMinimumSize(1200, 700)
         self.resize(1280, 800)
@@ -505,6 +513,10 @@ class SGNAnalyzer(QMainWindow):
         return navbar
 
     def upload_file(self):
+        """
+        Ouvre une boîte de dialogue pour sélectionner un fichier .sgn
+        et charge son contenu dans l'éditeur.
+        """
         file_path, _ = QFileDialog.getOpenFileName(self, "Ouvrir fichier SGN", "", "SGN Files (*.sgn);;All Files (*)", options=QFileDialog.DontUseNativeDialog)
         if file_path:
             try:
@@ -519,6 +531,10 @@ class SGNAnalyzer(QMainWindow):
                 QMessageBox.critical(self, "Erreur", str(e))
 
     def save_file(self):
+        """
+        Sauvegarde le contenu de l'éditeur dans le fichier actuel.
+        Si aucun fichier n'est défini, ouvre une boîte de dialogue pour "Enregistrer sous".
+        """
         if not self.current_file:
             self.current_file, _ = QFileDialog.getSaveFileName(self, "Sauvegarder", "", "SGN Files (*.sgn);;All Files (*)", options=QFileDialog.DontUseNativeDialog)
             if not self.current_file:
@@ -535,6 +551,10 @@ class SGNAnalyzer(QMainWindow):
             return False
 
     def run_analysis(self):
+        """
+        Sauvegarde le fichier en cours et lance l'exécutable d'analyse (C).
+        Parse le résultat JSON et met à jour l'interface graphique.
+        """
         if not self.current_file and len(self.editor.get_code().strip()) == 0:
             QMessageBox.warning(self, "Avertissement", "Veuillez ouvrir ou écrire un fichier avant d'analyser.")
             return
@@ -567,6 +587,10 @@ class SGNAnalyzer(QMainWindow):
         self.results.populate_table(self.last_results)
 
     def export_csv(self):
+        """
+        Exporte les résultats de la dernière analyse au format CSV
+        vers un chemin spécifié par l'utilisateur.
+        """
         if not self.last_results:
             QMessageBox.warning(self, "Avertissement", "Aucune donnée à exporter. Veuillez d'abord analyser un fichier.")
             return

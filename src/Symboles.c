@@ -6,6 +6,12 @@
 #include "symboles.h"
 
 
+/**
+ * symb_initialiser
+ * Initialise la table de symboles avec des entrées vides.
+ * 
+ * @param table Pointeur vers la table de symboles à initialiser.
+ */
 void symb_initialiser(TableSymboles *table) {
     int i;
     for (i = 0; i < TAILLE_TABLE; i++) {
@@ -58,6 +64,14 @@ int symb_inserer(TableSymboles *table,
 }
 
 
+/**
+ * symb_chercher
+ * Cherche un matricule donné dans la table de symboles.
+ * 
+ * @param table Pointeur vers la table de symboles.
+ * @param matricule Le matricule à chercher.
+ * @return Un pointeur vers l'entrée correspondante, ou NULL si non trouvé.
+ */
 EntreeSymbole *symb_chercher(TableSymboles *table,
                               const char    *matricule) {
     int i;
