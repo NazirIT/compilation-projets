@@ -23,3 +23,4 @@ rapport/*.synctex.gz
 
 # Configuration IDE
 .vscode/
+.gitignore/
